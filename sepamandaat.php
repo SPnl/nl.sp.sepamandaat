@@ -3,6 +3,40 @@
 require_once 'sepamandaat.civix.php';
 
 /**
+ * Implementation of hook_civicrm_post
+ * 
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_post
+ * @param type $op
+ * @param type $objectName
+ * @param type $objectId
+ * @param type $objectRef
+ */
+function sepamandaat_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
+  if ($objectName == 'MembershipPayment') {
+    $membership_payment = new CRM_Sepamandaat_Post_MembershipPayment();
+    $membership_payment->post($op, $objectRef);
+  }
+}
+
+/**
+ * 
+ * Implementation of hook_civicrm_buildForm
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_buildForm
+ */
+function sepamandaat_civicrm_buildForm($formName, &$form) {
+ if ($formName == 'CRM_Member_Form_Membership') {
+   //add template 
+   $membership = new CRM_Sepamandaat_Buildform_Membership($form);
+   $membership->parse();
+ }
+ if ($formName == 'CRM_Member_Form_MembershipRenewal') {
+   $membership = new CRM_Sepamandaat_Buildform_MembershipRenewal($form);
+   $membership->parse();
+ }
+}
+
+/**
  * Validate the entered IBAN account number
  * 
  * 
@@ -81,7 +115,11 @@ function sepamandaat_civicrm_odoo_object_definition_dependency(&$deps, CRM_Odoos
     if (is_array($data) && isset($data['contact_id'])) {
       $contact_id = $data['contact_id'];
     } else {
-      $contact_id = civicrm_api3('Contribution', 'getvalue', array('return' => 'contact_id', 'id' => $entity_id));
+      try {
+        $contact_id = civicrm_api3('Contribution', 'getvalue', array('return' => 'contact_id', 'id' => $entity_id));
+      } catch (Exception $e) {
+        return;
+      }
     }
     
     $contribution_config = CRM_Sepamandaat_Config_ContributionSepaMandaat::singleton();
