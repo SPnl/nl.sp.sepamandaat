@@ -34,8 +34,8 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>status_136</column_name>
-      <option_group_name>status</option_group_name>
+      <column_name>status</column_name>
+      <option_group_name>sepa_mandaat_status</option_group_name>
       <custom_group_name>SEPA_Mandaat</custom_group_name>
     </CustomField>
     <CustomField>

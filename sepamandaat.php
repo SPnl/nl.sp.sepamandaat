@@ -3,6 +3,81 @@
 require_once 'sepamandaat.civix.php';
 
 /**
+ * Validate the entered IBAN account number
+ * 
+ * 
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_validateForm
+ * @param type $formName
+ * @param type $fields
+ * @param type $files
+ * @param type $form
+ * @param type $errors
+ */
+function sepamandaat_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$errors ) {
+  if ($formName == 'CRM_Contact_Form_CustomData') {
+    $config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
+    
+    $groupId = $form->getVar('_groupID');
+    if ($groupId != $config->getCustomGroupInfo('id')) {
+      return;
+    }
+    
+    require_once('php-iban/oophp-iban.php');
+    $iban = new IBAN();
+    foreach($fields as $key => $value) {
+      if (strpos($key, "custom_".$config->getCustomField('IBAN', 'id'))===0) {
+        if (!$iban->Verify($value)) {
+          $errors[$key] = ts("'".$value."' is not a valid IBAN");
+        }
+      }
+    }
+  }
+}
+
+/** 
+ * Implementation of hook_civicrm_custom
+ * 
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_custom
+ */
+function sepamandaat_civicrm_custom($op,$groupID, $entityID, &$params ) {
+  //add iban to iban list of contact
+  CRM_Sepamandaat_Utils_AddToIbanList::custom($op, $groupID, $entityID, $params);
+    
+  //add to odoo sync queue
+  CRM_Sepamandaat_Utils_AddToOdooSyncQueue::custom($op, $groupID, $entityID, $params);
+}
+
+/**
+ * Check if an iban is in use by a membership
+ * 
+ * @param type $iban
+ */
+function sepamandaat_civicrm_iban_usages($iban) {
+  $config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
+  $table = $config->getCustomGroupInfo('table_name');
+  $iban_field = $config->getCustomField('IBAN', 'column_name');
+  $number_field = $config->getCustomField('mandaat_nr', 'column_name');
+  
+  $sql = "SELECT `i`.`id` AS `id`, `i`.`".$number_field."` AS mandaat_nr FROM `".$table."` `i` WHERE `i`.`".$iban_field."` = %1";
+  $dao = CRM_Core_DAO::executeQuery($sql, array('1' => array($iban, 'String')));
+  $return = array();
+  while($dao->fetch()) {
+    $return['civicrm_sepa_mandaat'][$dao->id] = ts("IBAN Account is used in Mandaat  '%1'", array(1 => $dao->mandaat_nr));
+  }
+  return $return;
+}
+
+/**
+ * Implementation of hook_civicrm_odoo_object_definition
+ * 
+ */
+function ibanodoosync_civicrm_odoo_object_definition(&$list) {  
+  $config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
+  $table_name = $config->getCustomGroupInfo('table_name');
+  $list[$table_name] = new CRM_Sepamandaat_OdooSync_Definition();
+}
+
+/**
  * Implementation of hook_civicrm_config
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
