@@ -58,13 +58,13 @@ class CRM_Sepamandaat_OdooSync_Definition extends CRM_Odoosync_Model_ObjectDefin
     if ($dao->fetch()) {
       $data['contact_id'] = $dao->entity_id;
       $data['id'] = $dao->id;
-      foreach($this->config->getAllCustomFields as $field) {
+      foreach($this->config->getAllCustomFields() as $field) {
         $column = $field['column_name'];
         $data[$field['name']] = $dao->$column;
       }
       
-      if (isset($data['iban']) && isset($data['contact_id'])) {
-        $data['iban_id'] = CRM_Ibanaccounts_Ibanaccounts::getIdByIBANAndContactId($data['iban'], $data['contact_id']);
+      if (isset($data['IBAN']) && isset($data['contact_id'])) {
+        $data['iban_id'] = CRM_Ibanaccounts_Ibanaccounts::getIdByIBANAndContactId($data['IBAN'], $data['contact_id']);
       }
       
       return $data;

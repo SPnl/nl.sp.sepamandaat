@@ -36,7 +36,7 @@ class CRM_Sepamandaat_Config {
   /**
    * Returns wether the org.civicoop.odoosync functionality is available
    */
-  public function isiOdooSyncEnabled() {
+  public function isOdooSyncEnabled() {
     return $this->isOdooSyncEnabled;
   }
   
@@ -45,7 +45,16 @@ class CRM_Sepamandaat_Config {
   }
   
   protected function checkForOdooSyncExtension() {
-    return $this->checkExtension('org.civicoop.odoosync') && $this->checkForIbanExtension();
+    if (!$this->checkExtension('org.civicoop.odoosync')) {
+      return false;
+    }
+    if (!$this->checkExtension('org.civicoop.ibanodoosync')) {
+      return false;
+    }
+    if (!$this->isIbanEnabled()) {
+      return false;
+    }
+    return true;
   }
   
   protected function checkExtension($extension) {

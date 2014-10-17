@@ -14,10 +14,10 @@ class CRM_Sepamandaat_Utils_AddToOdooSyncQueue {
     if ($groupID != $mandaat->getCustomGroupInfo('id')) {
       return;
     }
-    
+
     //check if odoo sync is enable
     $config = CRM_Sepamandaat_Config::singleton();
-    if ($config->isOdooSyncEnabled()) {
+    if (!$config->isOdooSyncEnabled()) {
       return;
     }
     

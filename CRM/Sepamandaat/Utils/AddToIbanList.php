@@ -21,7 +21,7 @@ class CRM_Sepamandaat_Utils_AddToIbanList {
     
     //check if iban is enabled
     $config = CRM_Sepamandaat_Config::singleton();
-    if ($config->isIbanEnabled()) {
+    if (!$config->isIbanEnabled()) {
       return;
     }
     

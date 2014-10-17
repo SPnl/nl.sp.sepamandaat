@@ -22,7 +22,6 @@ function sepamandaat_civicrm_validateForm( $formName, &$fields, &$files, &$form,
       return;
     }
     
-    require_once('php-iban/oophp-iban.php');
     $iban = new IBAN();
     foreach($fields as $key => $value) {
       if (strpos($key, "custom_".$config->getCustomField('IBAN', 'id'))===0) {
@@ -71,7 +70,7 @@ function sepamandaat_civicrm_iban_usages($iban) {
  * Implementation of hook_civicrm_odoo_object_definition
  * 
  */
-function ibanodoosync_civicrm_odoo_object_definition(&$list) {  
+function sepamandaat_civicrm_odoo_object_definition(&$list) {  
   $config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
   $table_name = $config->getCustomGroupInfo('table_name');
   $list[$table_name] = new CRM_Sepamandaat_OdooSync_Definition();
