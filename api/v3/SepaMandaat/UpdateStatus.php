@@ -17,15 +17,15 @@ function civicrm_api3_sepa_mandaat_update_status($params) {
   if (array_key_exists('mandaat_odoo_id', $params) && array_key_exists('status', $params)) {
     $civiIds = CRM_Odoosync_Model_OdooEntity::findByOdooId('sdd.mandate', $params['mandaat_odoo_id']);
     $config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
-    foreach($civiIds as $id => $entity) {
+    foreach($civiIds as $id => $val) {
       try {
         $sql = "UPDATE `".$config->getCustomGroupInfo('table_name')."` SET `".$config->getCustomField('status', 'column_name')."` = %1 WHERE `id` = %2";
         CRM_Core_DAO::executeQuery($sql, array(
           1 => array($params['status'], 'String'),
-          2 => array($id, 'Integer'),
+          2 => array($val['entity_id'], 'Integer'),
         ));
       } catch (Exception $ex) {
-
+        ; //do nothing
       }
     }
 
