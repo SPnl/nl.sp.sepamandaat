@@ -30,7 +30,7 @@ class CRM_Sepamandaat_OdooSync_Synchronisator extends CRM_Odoosync_Model_ObjectS
   public function performInsert(CRM_Odoosync_Model_OdooEntity $sync_entity) {
     $data = $this->getSepaMandaat($sync_entity->getEntityId());
     $odoo_partner_id = $sync_entity->findOdooIdByEntity('civicrm_contact', $data['contact_id']);
-    $parameters = $this->getOdooParameters($data, $odoo_partner_id, $sync_entity->getEntity(), $sync_entity->getEntityId(), 'create');
+    $parameters = $this->getOdooParameters($data, $odoo_partner_id, $sync_entity->getEntity(), $sync_entity->getEntityId(), 'create', $sync_entity);
     $odoo_id = $this->connector->create($this->getOdooResourceType(), $parameters);
     if ($odoo_id) {
       return $odoo_id;
@@ -45,7 +45,7 @@ class CRM_Sepamandaat_OdooSync_Synchronisator extends CRM_Odoosync_Model_ObjectS
   public function performUpdate($odoo_id, CRM_Odoosync_Model_OdooEntity $sync_entity) {
     $data = $this->getSepaMandaat($sync_entity->getEntityId());
     $odoo_partner_id = $sync_entity->findOdooIdByEntity('civicrm_contact', $data['contact_id']);
-    $parameters = $this->getOdooParameters($data, $odoo_partner_id, $sync_entity->getEntity(), $sync_entity->getEntityId(), 'create');
+    $parameters = $this->getOdooParameters($data, $odoo_partner_id, $sync_entity->getEntity(), $sync_entity->getEntityId(), 'create', $sync_entity);
     if ($this->connector->write($this->getOdooResourceType(), $odoo_id, $parameters)) {
       return $odoo_id;
     }
@@ -55,7 +55,7 @@ class CRM_Sepamandaat_OdooSync_Synchronisator extends CRM_Odoosync_Model_ObjectS
   public function getSyncData(\CRM_Odoosync_Model_OdooEntity $sync_entity, $odoo_id) {
     $data = $this->getSepaMandaat($sync_entity->getEntityId());
     $odoo_partner_id = $sync_entity->findOdooIdByEntity('civicrm_contact', $data['contact_id']);
-    $parameters = $this->getOdooParameters($data, $odoo_partner_id, $sync_entity->getEntity(), $sync_entity->getEntityId(), 'create');
+    $parameters = $this->getOdooParameters($data, $odoo_partner_id, $sync_entity->getEntity(), $sync_entity->getEntityId(), 'create', $sync_entity);
     return $parameters;
   }
   
@@ -137,12 +137,15 @@ class CRM_Sepamandaat_OdooSync_Synchronisator extends CRM_Odoosync_Model_ObjectS
    * @param type $contact
    * @return \xmlrpcval
    */
-  protected function getOdooParameters($data, $odoo_partner_id, $entity, $entity_id, $action) {
+  protected function getOdooParameters($data, $odoo_partner_id, $entity, $entity_id, $action, $sync_entity) {
     $mandaat_datum = new DateTime($data['mandaat_datum']);
+    $iban_config = CRM_Ibanaccounts_Config::singleton();
+    $bank_id = $sync_entity->findOdooIdByEntity($iban_config->getIbanCustomGroupValue('table_name'), $data['iban_id']);
     $parameters = array(
-      'partner_bank_id' => new xmlrpcval($data['iban_id'], 'int'),
+      'partner_bank_id' => new xmlrpcval($bank_id, 'int'),
       'partner_id' => new xmlrpcval($odoo_partner_id, 'int'),  
-      'signature_date' => new xmlrpcval($mandaat_datum->format('d-m-Y'), 'string'),
+      'signature_date' => new xmlrpcval($mandaat_datum->format('m-d-Y'), 'string'),
+      'unique_mandate_reference' => new xmlrpcval($data['mandaat_nr'], 'string'),
     );
     if ($parameters['status'] == 'OOFF') {
       $parameters['type'] = new xmlrpcval('oneoff', 'string');
