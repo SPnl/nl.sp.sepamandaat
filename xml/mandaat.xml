@@ -40,7 +40,7 @@
     </CustomField>
     <CustomField>
       <name>mandaat_nr</name>
-      <label>Mandaat nr</label>
+      <label>Mandaat ID</label>
       <data_type>String</data_type>
       <html_type>Text</html_type>
       <is_required>1</is_required>
@@ -74,6 +74,41 @@
       <custom_group_name>SEPA_Mandaat</custom_group_name>
     </CustomField>
     <CustomField>
+      <name>plaats</name>
+      <label>Plaats</label>
+      <data_type>String</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>4</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>mandaat_nr</column_name>
+      <custom_group_name>SEPA_Mandaat</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>verval_datum</name>
+      <label>Verval datum</label>
+      <data_type>Date</data_type>
+      <html_type>Select Date</html_type>
+      <is_required>0</is_required>
+      <is_searchable>1</is_searchable>
+      <is_search_range>1</is_search_range>
+      <weight>5</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <date_format>dd-mm-yy</date_format>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>mandaat_datum</column_name>
+      <custom_group_name>SEPA_Mandaat</custom_group_name>
+    </CustomField>
+    <CustomField>
       <name>IBAN</name>
       <label>IBAN</label>
       <data_type>String</data_type>
@@ -81,7 +116,7 @@
       <is_required>1</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>4</weight>
+      <weight>6</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>255</text_length>
@@ -98,7 +133,7 @@
       <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>5</weight>
+      <weight>7</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>255</text_length>
@@ -117,6 +152,17 @@
     </OptionGroup>
   </OptionGroups>
   <OptionValues>
+    <OptionValue>
+      <label>NEW</label>
+      <value>NEW</value>
+      <name>NEW</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>sepa_mandaat_status</option_group_name>
+    </OptionValue>
     <OptionValue>
       <label>FRST</label>
       <value>FRST</value>
