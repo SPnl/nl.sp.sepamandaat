@@ -76,6 +76,40 @@ function sepamandaat_civicrm_odoo_object_definition(&$list) {
   $list[$table_name] = new CRM_Sepamandaat_OdooSync_Definition();
 }
 
+function sepamandaat_civicrm_odoo_object_definition_dependency(&$deps, CRM_Odoosync_Model_ObjectDefinition $def, $entity_id, $action, $data=false) {
+  if ($def instanceof CRM_OdooContributionSync_ContributionDefinition) {
+    if (is_array($data) && isset($data['contact_id'])) {
+      $contact_id = $data['contact_id'];
+    } else {
+      $contact_id = civicrm_api3('Contribution', 'getvalue', array('return' => 'contact_id', 'id' => $entity_id));
+    }
+    
+    $contribution_config = CRM_Sepamandaat_Config_ContributionSepaMandaat::singleton();
+    $mandaat_config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
+    $sql = "SELECT `".$contribution_config->getCustomField('mandaat_id', 'column_name')."` AS `mandaat_id` FROM `".$contribution_config->getCustomGroupInfo('table_name')."` WHERE `entity_id` = %1";
+    $dao = CRM_Core_DAO::executeQuery($sql, array(1 => array($entity_id, 'Integer')));
+    if ($dao->fetch() && $dao->mandaat_id) {
+      $deps[] = new CRM_Odoosync_Model_Dependency($mandaat_config->getCustomGroupInfo('table_name'), $dao->mandaat_id);
+    }    
+  }
+}
+
+function sepamandaat_civicrm_odoo_alter_parameters(&$parameters, $entity, $entity_id, $action) {
+  if ($entity == 'civicrm_contribution') {
+    //add mandaat id to parameter list
+    $mandaat_config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
+    $contribution_config = CRM_Sepamandaat_Config_ContributionSepaMandaat::singleton();
+    $sql = "SELECT `".$contribution_config->getCustomField('mandaat_id', 'column_name')."` AS `mandaat_id` FROM `".$contribution_config->getCustomGroupInfo('table_name')."` WHERE `entity_id` = %1";
+    $dao = CRM_Core_DAO::executeQuery($sql, array(1 => array($entity_id, 'Integer')));
+    if ($dao->fetch() && $dao->mandaat_id) {
+      $odoo_id = CRM_Odoosync_Model_OdooEntity::findOdooIdByEntityAndEntityId($mandaat_config->getCustomGroupInfo('table_name'), $dao->mandaat_id);
+      if ($odoo_id) {
+        $parameters['sdd_mandate_id'] = new xmlrpcval($odoo_id, 'int');
+      }
+    }
+  }
+}
+
 /**
  * Implementation of hook_civicrm_config
  *
