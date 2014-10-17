@@ -94,7 +94,7 @@ function sepamandaat_civicrm_odoo_object_definition_dependency(&$deps, CRM_Odoos
   }
 }
 
-function sepamandaat_civicrm_odoo_alter_parameters(&$parameters, $entity, $entity_id, $action) {
+function sepamandaat_civicrm_odoo_alter_parameters(&$parameters, $resource, $entity, $entity_id, $action) {
   if ($entity == 'civicrm_contribution') {
     //add mandaat id to parameter list
     $mandaat_config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
