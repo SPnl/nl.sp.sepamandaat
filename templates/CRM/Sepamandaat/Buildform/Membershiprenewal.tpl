@@ -13,8 +13,8 @@ cj(function() {
         cj('input[data-crm-custom="Membership_SEPA_Mandaat:mandaat_id"]').val(cj('select#mandaat_id').val());
     });
 
-    //var iban_membership = new IBAN_Membershiprenewal();
-    //iban_membership.init('{/literal}{$snippet.contact_id}{literal}');
+    var sepa_membership = new SepaMandaat_Membershiprenewal();
+    sepa_membership.init('{/literal}{$snippet.contact_id}{literal}');
 
     cj('#Membership_SEPA_Mandaat').addClass('hiddenElement');
 });
