@@ -33,7 +33,7 @@ class CRM_Sepamandaat_Post_MembershipPayment {
     $sql = "INSERT INTO `" . $table . "` (`entity_id`, `" . $mandaat_id_field . "`) VALUES (%1, %2);";
     $dao = CRM_Core_DAO::executeQuery($sql, array(
           '1' => array($contribution_id, 'Integer'),
-          '2' => array($mandaat_id, 'Integer'),
+          '2' => array($mandaat_id, 'String'),
     ));
   }
   

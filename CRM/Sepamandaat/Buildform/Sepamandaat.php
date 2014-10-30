@@ -24,7 +24,11 @@ abstract class CRM_Sepamandaat_Buildform_Sepamandaat {
       $mandaten = CRM_Sepamandaat_SepaMandaat::getMandatesByContact($contactId);
 
       foreach ($mandaten as $id => $mandaat) {
-        $options[$id] = $mandaat['mandaat_nr'];
+        $label = $mandaat['mandaat_nr'];
+        if (strlen($mandaat['subject'])) {
+          $label = $mandaat['subject'] . ' ('.$mandaat['mandaat_nr'].')';
+        }
+        $options[$mandaat['mandaat_nr']] = $label;
       }
     }
     return $options;

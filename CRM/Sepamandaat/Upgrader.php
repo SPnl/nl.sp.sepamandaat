@@ -11,5 +11,18 @@ class CRM_Sepamandaat_Upgrader extends CRM_Sepamandaat_Upgrader_Base {
     $this->executeCustomDataFile('xml/contribution_mandaat.xml');
     $this->executeCustomDataFile('xml/membership_mandaat.xml');
   }
+  
+  protected function removeCustomGroup($name) {
+    try {
+      $custom_group = civicrm_api3('CustomGroup', 'getsingle', array('name' => $name));
+      $fields = civicrm_api3('CustomField', 'get' , array('custom_group_id' => $custom_group['id']));
+      foreach($fields['values'] as $field) {
+        civicrm_api3('CustomField', 'delete', array('id' => $field['id']));
+      }
+      civicrm_api3('CustomGroup', 'delete', array('id' => $custom_group['id']));
+    } catch (Exception $e) {
+      
+    }
+  }
 
 }

@@ -15,7 +15,7 @@ cj(function() {
 
     var sepa_membership = new SepaMandaat_Membershiprenewal();
     sepa_membership.init('{/literal}{$snippet.contact_id}{literal}');
-
+    cj('select#mandaat_id').val(cj('input[data-crm-custom="Membership_SEPA_Mandaat:mandaat_id"]').val());
     cj('#Membership_SEPA_Mandaat').addClass('hiddenElement');
 });
 {/literal}

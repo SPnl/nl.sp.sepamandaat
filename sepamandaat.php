@@ -25,6 +25,17 @@ function sepamandaat_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_buildForm
  */
 function sepamandaat_civicrm_buildForm($formName, &$form) {
+ if ($formName == 'CRM_Contact_Form_CustomData') {
+   if (CRM_Sepamandaat_Buildform_DefaultMandaatId::isValidForm($form)) {
+     $defaultMandaatId = new CRM_Sepamandaat_Buildform_DefaultMandaatId($form);
+     $defaultMandaatId->parse();
+   }
+ }
+ if ($formName == 'CRM_Contribute_Form_Contribution') {
+   //add template 
+   $contribution = new CRM_Sepamandaat_Buildform_Contribution($form);
+   $contribution->parse();
+ }
  if ($formName == 'CRM_Member_Form_Membership') {
    //add template 
    $membership = new CRM_Sepamandaat_Buildform_Membership($form);
@@ -73,6 +84,9 @@ function sepamandaat_civicrm_validateForm( $formName, &$fields, &$files, &$form,
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_custom
  */
 function sepamandaat_civicrm_custom($op,$groupID, $entityID, &$params ) {
+  //add default Mandaat ID
+  CRM_Sepamandaat_Utils_DefaultMandaatId::custom($op, $groupID, $entityID, $params);
+  
   //add iban to iban list of contact
   CRM_Sepamandaat_Utils_AddToIbanList::custom($op, $groupID, $entityID, $params);
     
@@ -140,7 +154,11 @@ function sepamandaat_civicrm_odoo_alter_parameters(&$parameters, $resource, $ent
     $sql = "SELECT `".$contribution_config->getCustomField('mandaat_id', 'column_name')."` AS `mandaat_id` FROM `".$contribution_config->getCustomGroupInfo('table_name')."` WHERE `entity_id` = %1";
     $dao = CRM_Core_DAO::executeQuery($sql, array(1 => array($entity_id, 'Integer')));
     if ($dao->fetch() && $dao->mandaat_id) {
-      $odoo_id = CRM_Odoosync_Model_OdooEntity::findOdooIdByEntityAndEntityId($mandaat_config->getCustomGroupInfo('table_name'), $dao->mandaat_id);
+      $odoo_id = false;
+      $mandaat_id = CRM_Sepamandaat_SepaMandaat::findMandaatIdByMandaatNr($dao->mandaat_id);
+      if ($mandaat_id) {
+        $odoo_id = CRM_Odoosync_Model_OdooEntity::findOdooIdByEntityAndEntityId($mandaat_config->getCustomGroupInfo('table_name'), $mandaat_id);
+      }
       if ($odoo_id) {
         $parameters['sdd_mandate_id'] = new xmlrpcval($odoo_id, 'int');
       }
