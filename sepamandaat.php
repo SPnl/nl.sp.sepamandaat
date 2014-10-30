@@ -138,7 +138,7 @@ function sepamandaat_civicrm_odoo_object_definition_dependency(&$deps, CRM_Odoos
     
     $contribution_config = CRM_Sepamandaat_Config_ContributionSepaMandaat::singleton();
     $mandaat_config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
-    $sql = "SELECT `".$contribution_config->getCustomField('mandaat_id', 'column_name')."` AS `mandaat_id` FROM `".$contribution_config->getCustomGroupInfo('table_name')."` WHERE `entity_id` = %1";
+    $sql = "SELECT `id` AS `mandaat_id` FROM `".$contribution_config->getCustomGroupInfo('table_name')."` WHERE `entity_id` = %1";
     $dao = CRM_Core_DAO::executeQuery($sql, array(1 => array($entity_id, 'Integer')));
     if ($dao->fetch() && $dao->mandaat_id) {
       $deps[] = new CRM_Odoosync_Model_Dependency($mandaat_config->getCustomGroupInfo('table_name'), $dao->mandaat_id);
