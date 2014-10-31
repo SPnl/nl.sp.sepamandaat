@@ -46,20 +46,26 @@ class CRM_Sepamandaat_SepaMandaat {
     return false;
   }
   
-  public static function getNewMandaatIdForContact($contact_id) {
+  public static function getNewMandaatIdForContact($contact_id, $count_from_db=true) {
+    static $db_count = 0;
+    
     $config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
     $table_name = $config->getCustomGroupInfo('table_name');
-        
-    $sql = "SELECT COUNT(*) + 1 AS `total` FROM `".$table_name."` WHERE LENGTH(`".$config->getCustomField('mandaat_nr', 'column_name')."`) > 0 AND `entity_id` = %1";
-    $dao = CRM_Core_DAO::executeQuery($sql, array(1 => array( $contact_id, 'Integer')));
-    $seqNr = 1;
-    if ($dao->fetch()) {
-      $seqNr = $dao->total;
+    if ($count_from_db) {    
+      $sql = "SELECT COUNT(*) + 1 AS `total` FROM `".$table_name."` WHERE LENGTH(`".$config->getCustomField('mandaat_nr', 'column_name')."`) > 0 AND `entity_id` = %1";
+      $dao = CRM_Core_DAO::executeQuery($sql, array(1 => array( $contact_id, 'Integer')));
+      $seqNr = 1;
+      if ($dao->fetch()) {
+        $seqNr = $dao->total;
+      }
+      $db_count = $seqNr;
+    } else {
+      $db_count++;
     }
     
     $mandaat_id = str_pad($contact_id, 8, "0", STR_PAD_LEFT);
     $mandaat_id .= '-';
-    $mandaat_id .= str_pad($seqNr, 4, "0", STR_PAD_LEFT);
+    $mandaat_id .= str_pad($db_count, 4, "0", STR_PAD_LEFT);
     
     return $mandaat_id;
   }

@@ -75,6 +75,8 @@ function sepamandaat_civicrm_validateForm( $formName, &$fields, &$files, &$form,
         }
       }
     }
+    
+    CRM_Sepamandaat_Utils_DefaultMandaatId::validateForm($formName, $fields, $files, $form, $errors);
   }
 }
 
