@@ -46,6 +46,7 @@ class CRM_Sepamandaat_OdooSync_Definition extends CRM_Odoosync_Model_ObjectDefin
     } catch (Exception $ex) {
        //do nothing
     }
+
     return $dep;
   }
   
