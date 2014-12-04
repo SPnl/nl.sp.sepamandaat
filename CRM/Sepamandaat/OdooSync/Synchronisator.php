@@ -34,7 +34,7 @@ class CRM_Sepamandaat_OdooSync_Synchronisator extends CRM_Odoosync_Model_ObjectS
     $odoo_id = $this->connector->create($this->getOdooResourceType(), $parameters);
     if ($odoo_id) {
       return $odoo_id;
-    }
+    } 
     throw new Exception('Could not insert bank sepa mandaat into Odoo');
   }
   
@@ -149,10 +149,15 @@ class CRM_Sepamandaat_OdooSync_Synchronisator extends CRM_Odoosync_Model_ObjectS
     );
     if ($parameters['status'] == 'OOFF') {
       $parameters['type'] = new xmlrpcval('oneoff', 'string');
+      $parameters['recurrent_sequence_type'] = new xmlrpcval('first', 'string');
     } else {
       $parameters['type'] = new xmlrpcval('recurrent', 'string');
       $conversion = array('FRST' => 'first', 'RCUR' => 'recurring');
-      $parameters['recurrent_sequence_type'] = new xmlrpcval($conversion[$data['status']], 'string');
+      $recurType = 'first';
+      if (isset($conversion[$data['status']])) {
+        $recurType = $conversion[$data['status']];
+      }
+      $parameters['recurrent_sequence_type'] = new xmlrpcval($recurType, 'string');
     }
     
     $this->alterOdooParameters($parameters, $this->getOdooResourceType(), $entity, $entity_id, $action);
