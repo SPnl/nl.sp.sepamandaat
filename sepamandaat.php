@@ -18,6 +18,12 @@ function sepamandaat_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
   }
 }
 
+function sepamandaat_civicrm_pre( $op, $objectName, $objectId, &$params ) {
+  if ($objectName == 'Individual' || $objectName == 'Organization' || $objectName == 'Household') {
+    CRM_Sepamandaat_Utils_DefaultMandaatId::pre($op, $objectName, $objectId, $params);
+  }
+}
+
 /**
  * 
  * Implementation of hook_civicrm_buildForm

@@ -34,6 +34,7 @@ class CRM_Sepamandaat_Utils_AddToOdooSyncQueue {
         $contactParams['custom_'.$param['custom_field_id']] = $param['value'];
         $contactParams['return.custom_'.$param['custom_field_id']] = 1;
       }
+      
       $contact = civicrm_api3('Contact', 'getsingle', $contactParams);
       //extract the custom value table id
       $objectId = $contact[$mandaat->getCustomGroupInfo('table_name').'_id'];

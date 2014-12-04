@@ -29,6 +29,54 @@ class CRM_Sepamandaat_Utils_DefaultMandaatId {
     }
   }
   
+  public static function pre($op, $objectName, $objectId, &$params) {
+    if ($op != 'edit') {
+      return;
+    }
+    
+    if ($objectName != 'Individual' && $objectName != 'Organization' && $objectName != 'Household') {
+      return;
+    }
+    
+    $mandaat_fields_sets = array();
+    $mandaat = CRM_Sepamandaat_Config_SepaMandaat::singleton();
+    foreach($mandaat->getAllCustomFields() as $field) {
+      if (isset($params['custom_'.$field['id']])) {
+        foreach($params['custom'][$field['id']] as $key => $instance) {
+          $mandaat_fields_sets[$key] = $instance['id'];
+        }
+        break;
+      }
+    }
+    
+    if (!count($mandaat_fields_sets)) {
+      return;
+    }
+    
+    foreach($mandaat_fields_sets as $key => $id) {
+      $mandaat_nr_field_id = $mandaat->getCustomField('mandaat_nr', 'id');
+      if (!isset($params['custom'][$mandaat_nr_field_id][$key])) {
+        $mandaat_id = '';
+        if (!empty($id)) {
+          $mandaat_id = CRM_Sepamandaat_SepaMandaat::getMandatesByContactAndId($objectId, $id);
+        }
+        $mandaat_id_field = array();
+        CRM_Core_BAO_CustomField::formatCustomField(    
+          $mandaat->getCustomField('mandaat_nr', 'id'),
+          $mandaat_id_field,
+          $mandaat_id,
+          null
+        );
+        
+        $params['custom'][$mandaat_nr_field_id][$key] = $mandaat_id_field[$mandaat_nr_field_id][$key];
+      }
+      
+      if (empty($params['custom'][$mandaat_nr_field_id][$key]['value'])) {
+        $params['custom'][$mandaat_nr_field_id][$key]['value'] = CRM_Sepamandaat_SepaMandaat::getNewMandaatIdForContact($objectId);
+      }
+    }
+  }
+  
   public static function custom($op,$groupID, $entityID, &$params ) {
     if ($op != 'create' && $op != 'edit') {
       return;
@@ -41,35 +89,7 @@ class CRM_Sepamandaat_Utils_DefaultMandaatId {
     }
     
     $mandaat_config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
-    $mandaat_id_field_not_in_params = true;
-    $id = false;
-    foreach($params as $key => $param) {
-      if (empty($id) && !empty($param['id'])) {
-        $id = $param['id'];
-      }
-      if ($param['custom_field_id'] == $mandaat_config->getCustomField('mandaat_nr', 'id')) {
-        $mandaat_id_field_not_in_params = false;
-      }
-    }
-    
-    if ($mandaat_id_field_not_in_params) {
-      $mandaat_id = '';
-      if (!empty($id)) {
-        $mandaat_id = CRM_Sepamandaat_SepaMandaat::getMandatesByContactAndId($entityID, $id);
-      }
-      $mandaat_id_field = array();
-      CRM_Core_BAO_CustomField::formatCustomField(    
-          $mandaat_config->getCustomField('mandaat_nr', 'id'),
-          $mandaat_id_field,
-          $mandaat_id,
-          null
-      );
-      $mandaat_id_field = $mandaat_id_field[$mandaat_config->getCustomField('mandaat_nr', 'id')][-1];
-      $mandaat_id_field['entity_table'] = 'civicrm_contact';
-      $mandaat_id_field['entity_id'] = $entityID;
-      $params[] = $mandaat_id_field;
-    }
-    
+
     foreach($params as $key => $param) {
       if ($param['custom_field_id'] == $mandaat_config->getCustomField('mandaat_nr', 'id') && empty($param['value'])) {
         $mandaat_id = CRM_Sepamandaat_SepaMandaat::getNewMandaatIdForContact($param['entity_id']);
