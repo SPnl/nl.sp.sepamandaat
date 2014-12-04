@@ -41,15 +41,44 @@ class CRM_Sepamandaat_Utils_DefaultMandaatId {
     }
     
     $mandaat_config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
-    foreach($params as $param) {
+    $mandaat_id_field_not_in_params = true;
+    $id = false;
+    foreach($params as $key => $param) {
+      if (empty($id) && !empty($param['id'])) {
+        $id = $param['id'];
+      }
+      if ($param['custom_field_id'] == $mandaat_config->getCustomField('mandaat_nr', 'id')) {
+        $mandaat_id_field_not_in_params = false;
+      }
+    }
+    
+    if ($mandaat_id_field_not_in_params) {
+      $mandaat_id = '';
+      if (!empty($id)) {
+        $mandaat_id = CRM_Sepamandaat_SepaMandaat::getMandatesByContactAndId($entityID, $id);
+      }
+      $mandaat_id_field = array();
+      CRM_Core_BAO_CustomField::formatCustomField(    
+          $mandaat_config->getCustomField('mandaat_nr', 'id'),
+          $mandaat_id_field,
+          $mandaat_id,
+          null
+      );
+      $mandaat_id_field = $mandaat_id_field[$mandaat_config->getCustomField('mandaat_nr', 'id')][-1];
+      $mandaat_id_field['entity_table'] = 'civicrm_contact';
+      $mandaat_id_field['entity_id'] = $entityID;
+      $params[] = $mandaat_id_field;
+    }
+    
+    foreach($params as $key => $param) {
       if ($param['custom_field_id'] == $mandaat_config->getCustomField('mandaat_nr', 'id') && empty($param['value'])) {
         $mandaat_id = CRM_Sepamandaat_SepaMandaat::getNewMandaatIdForContact($param['entity_id']);
-        $param['value'] = $mandaat_id;
+        $params[$key]['value'] = $mandaat_id;
         if (!empty($param['id'])) {
-          $sql = "UPDATE `".$param['table_name']."` SET `".$param['column_name']."` = %1 WHERE `id` = %2";
+          $sql = "UPDATE `".$params[$key]['table_name']."` SET `".$params[$key]['column_name']."` = %1 WHERE `id` = %2";
           CRM_Core_DAO::executeQuery($sql, array(
-            1 => array($param['value'], 'String'),
-            2 => array($param['id'], 'Integer'),
+            1 => array($params[$key]['value'], 'String'),
+            2 => array($params[$key]['id'], 'Integer'),
           ));
         }
       }
