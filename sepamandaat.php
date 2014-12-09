@@ -107,14 +107,17 @@ function sepamandaat_civicrm_custom($op,$groupID, $entityID, &$params ) {
  * 
  * @param type $iban
  */
-function sepamandaat_civicrm_iban_usages($iban) {
+function sepamandaat_civicrm_iban_usages($iban, $contactId = false) {
   $config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
   $table = $config->getCustomGroupInfo('table_name');
   $iban_field = $config->getCustomField('IBAN', 'column_name');
   $number_field = $config->getCustomField('mandaat_nr', 'column_name');
   
-  $sql = "SELECT `i`.`id` AS `id`, `i`.`".$number_field."` AS mandaat_nr FROM `".$table."` `i` WHERE `i`.`".$iban_field."` = %1";
-  $dao = CRM_Core_DAO::executeQuery($sql, array('1' => array($iban, 'String')));
+  $sql = "SELECT `i`.`id` AS `id`, `i`.`".$number_field."` AS mandaat_nr FROM `".$table."` `i` WHERE `i`.`".$iban_field."` = %1 AND `i`.`entity_id` = %2";
+  $dao = CRM_Core_DAO::executeQuery($sql, array(
+    '1' => array($iban, 'String'),
+    '2' => array($contactId, 'Integer'),
+  ));
   $return = array();
   while($dao->fetch()) {
     $return['civicrm_sepa_mandaat'][$dao->id] = ts("IBAN Account is used in Mandaat  '%1'", array(1 => $dao->mandaat_nr));
