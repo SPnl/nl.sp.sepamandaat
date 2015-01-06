@@ -83,9 +83,9 @@ class CRM_Sepamandaat_SepaMandaat {
       $db_count++;
     }
     
-    $mandaat_id = str_pad($contact_id, 8, "0", STR_PAD_LEFT);
+    $mandaat_id = $contact_id;
     $mandaat_id .= '-';
-    $mandaat_id .= str_pad($db_count, 4, "0", STR_PAD_LEFT);
+    $mandaat_id .= $db_count;
     
     return $mandaat_id;
   }
