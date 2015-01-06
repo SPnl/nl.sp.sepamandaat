@@ -160,7 +160,7 @@ class CRM_Sepamandaat_OdooSync_Synchronisator extends CRM_Odoosync_Model_ObjectS
       $parameters['recurrent_sequence_type'] = new xmlrpcval($recurType, 'string');
     }
     
-    $parameters['state'] = new xmlrpc('valid', 'string');
+    $parameters['state'] = new xmlrpcval('valid', 'string');
     
     $this->alterOdooParameters($parameters, $this->getOdooResourceType(), $entity, $entity_id, $action);
     
