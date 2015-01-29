@@ -11,6 +11,11 @@ class CRM_Sepamandaat_Upgrader extends CRM_Sepamandaat_Upgrader_Base {
     $this->executeCustomDataFile('xml/contribution_mandaat.xml');
     $this->executeCustomDataFile('xml/membership_mandaat.xml');
   }
+
+  public function upgrade_1001() {
+    $this->executeCustomDataFile('xml/mandaat.xml');
+    return true;
+  }
   
   protected function removeCustomGroup($name) {
     try {
