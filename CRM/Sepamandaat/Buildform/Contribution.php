@@ -7,7 +7,7 @@ class CRM_Sepamandaat_Buildform_Contribution extends CRM_Sepamandaat_Buildform_S
   }
   
   protected function getCurrentSepamandaat($contactId) {
-    $config = CRM_Sepamandaat_Config_MembershipSepaMandaat::singleton();
+    $config = CRM_Sepamandaat_Config_ContributionSepaMandaat::singleton();
     $table = $config->getCustomGroupInfo('table_name');
     $mandaat_id_field = $config->getCustomField('mandaat_id', 'column_name');
     
