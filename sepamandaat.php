@@ -175,7 +175,7 @@ function sepamandaat_civicrm_odoo_alter_parameters(&$parameters, $resource, $ent
       if ($odoo_id > 0) {
         $parameters['sdd_mandate_id'] = new xmlrpcval($odoo_id, 'int');
       } else {
-        throw new Exception('Could not lookup mandaat in Odoo '.$dao->mandaat_id.' ('.$mandaat_id.')')
+        throw new Exception('Could not lookup mandaat in Odoo '.$dao->mandaat_id.' ('.$mandaat_id.')');
       }
     }
   }
