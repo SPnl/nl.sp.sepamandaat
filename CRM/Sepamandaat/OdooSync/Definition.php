@@ -26,6 +26,10 @@ class CRM_Sepamandaat_OdooSync_Definition extends CRM_Odoosync_Model_ObjectDefin
   public function getCiviCRMEntityName() {
     return $this->config->getCustomGroupInfo('table_name');
   }
+
+  public function getWeight($action) {
+    return -20; //lower than contribution
+  }
   
   public function getSynchronisatorClass() {
     return 'CRM_Sepamandaat_OdooSync_Synchronisator';
