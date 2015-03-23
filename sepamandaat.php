@@ -172,8 +172,10 @@ function sepamandaat_civicrm_odoo_alter_parameters(&$parameters, $resource, $ent
       if ($mandaat_id) {
         $odoo_id = CRM_Odoosync_Model_OdooEntity::findOdooIdByEntityAndEntityId($mandaat_config->getCustomGroupInfo('table_name'), $mandaat_id);
       }
-      if ($odoo_id) {
+      if ($odoo_id > 0) {
         $parameters['sdd_mandate_id'] = new xmlrpcval($odoo_id, 'int');
+      } else {
+        throw new Exception('Could not lookup mandaat in Odoo '.$dao->mandaat_id.' ('.$mandaat_id.')')
       }
     }
   }
