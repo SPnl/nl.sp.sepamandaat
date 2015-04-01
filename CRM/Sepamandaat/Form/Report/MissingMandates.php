@@ -41,17 +41,19 @@ class CRM_Sepamandaat_Form_Report_MissingMandates extends CRM_Report_Form {
       $this->limit();
     }
 
-    return "SELECT SQL_CALC_FOUND_ROWS distinct id as contact_id, display_name as contact_name
-            FROM civicrm_contact
-            where id IN (
-              select c.contact_id
+    return "SELECT SQL_CALC_FOUND_ROWS distinct m.id as id, c.contact_id as contact_id , contact.display_name as contact_name, mt.name as membership
               from civicrm_contribution c
+              left join civicrm_contact contact on c.contact_id = contact.id
+              left join civicrm_membership_payment mp on c.id = mp.contribution_id
+              left join civicrm_membership m on mp.membership_id = m.id
+              left join civicrm_membership_type mt on m.membership_type_id = mt.id
               left join `".$ctable."` `cm` ON `c`.`id` = `cm`.`entity_id`
-              left join `".$table."` `m` ON `cm`.`".$cfield."` = `m`.`".$field."`
+              left join `".$table."` `mandaat` ON `cm`.`".$cfield."` = `mandaat`.`".$field."`
               where c.payment_instrument_id = '".$payment_instrument_id."'
               and year(date(c.receive_date)) = 2015
-              AND (`cm`.`id` IS NULL OR `m`.`id` IS NULL)
-            ) {$this->_limit}";
+              AND (`cm`.`id` IS NULL OR `mandaat`.`id` IS NULL)
+              ORDER BY mt.name desc
+             {$this->_limit}";
   }
 
   function postProcess() {
@@ -73,6 +75,7 @@ class CRM_Sepamandaat_Form_Report_MissingMandates extends CRM_Report_Form {
     // use this method to modify $this->_columnHeaders
     $this->_columnHeaders['contact_id'] = array('title' => 'Contact ID');
     $this->_columnHeaders['contact_name'] = array('title' =>'Name');
+    $this->_columnHeaders['membership'] = array('title' =>'Membership');
   }
 
   function alterDisplay(&$rows) {
