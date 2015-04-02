@@ -76,6 +76,7 @@ class CRM_Sepamandaat_Form_Report_MissingMandates extends CRM_Report_Form {
     $this->_columnHeaders['contact_id'] = array('title' => 'Contact ID');
     $this->_columnHeaders['contact_name'] = array('title' =>'Name');
     $this->_columnHeaders['membership'] = array('title' =>'Membership');
+    $this->_columnHeaders['groups'] = array('title' =>'Group');
   }
 
   function alterDisplay(&$rows) {
@@ -85,6 +86,14 @@ class CRM_Sepamandaat_Form_Report_MissingMandates extends CRM_Report_Form {
         $this->_absoluteUrl
       );
       $rows[$rowNum]['contact_name_link'] = $url;
+      $rows[$rowNum]['groups'] = '';
+      $group = civicrm_api3('GroupContact', 'get', array('contact_id' => $row['contact_id']));
+      foreach ($group["values"] as $g) {
+        if (strlen($rows[$rowNum]['groups'])) {
+          $rows[$rowNum]['groups'] .= ', ';
+        }
+        $rows[$rowNum]['groups'] .= $g['title'];
+      }
     }
   }
 }
