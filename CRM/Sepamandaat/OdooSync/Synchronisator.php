@@ -95,6 +95,7 @@ class CRM_Sepamandaat_OdooSync_Synchronisator extends CRM_Odoosync_Model_ObjectS
     $result = $this->connector->search($this->getOdooResourceType(), $key);
     foreach($result as $id_element) {
         $id = $id_element->scalarval();
+        return $id;
     }
     return false;
   }
