@@ -82,8 +82,9 @@ class CRM_Sepamandaat_SepaMandaat {
     } else {
       $db_count++;
     }
-    
-    $mandaat_id = $contact_id;
+
+    $mandaat_id = 'MBOA-';
+    $mandaat_id .= $contact_id;
     $mandaat_id .= '-';
     $mandaat_id .= $db_count;
     
