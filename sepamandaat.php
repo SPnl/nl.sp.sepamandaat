@@ -182,6 +182,24 @@ function sepamandaat_civicrm_odoo_alter_parameters(&$parameters, $resource, $ent
 }
 
 /**
+ * Implementatio of hook__civicrm_tabs
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_tabs
+ */
+function sepamandaat_civicrm_tabs(&$tabs, $contactID) {
+  if (CRM_Core_Permission::check('access CiviContribute')) {
+    return;
+  }
+  
+  $config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
+  $tab_id = 'custom_'.$config->getCustomGroupInfo('id');
+  foreach($tabs as $key => $tab) {
+    if ($tab['id'] == $tab_id) {
+      unset($tabs[$key]);
+    }
+  }
+}
+
+/**
  * Implementation of hook_civicrm_config
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
