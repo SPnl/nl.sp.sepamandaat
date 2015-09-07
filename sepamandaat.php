@@ -189,7 +189,7 @@ function sepamandaat_civicrm_tabs(&$tabs, $contactID) {
   if (CRM_Core_Permission::check('access CiviContribute')) {
     return;
   }
-  
+
   $config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
   $tab_id = 'custom_'.$config->getCustomGroupInfo('id');
   foreach($tabs as $key => $tab) {

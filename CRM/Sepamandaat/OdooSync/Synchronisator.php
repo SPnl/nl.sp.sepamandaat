@@ -34,7 +34,13 @@ class CRM_Sepamandaat_OdooSync_Synchronisator extends CRM_Odoosync_Model_ObjectS
     $odoo_id = $this->connector->create($this->getOdooResourceType(), $parameters);
     if ($odoo_id) {
       return $odoo_id;
-    } 
+    }
+    if ($this->connector->getLastResponse()->faultString()) {
+      $error = $this->connector->getLastResponse()->faultString();
+      $error = str_replace("warning -- Error:", "", $error);
+      $error = trim($error);
+      throw new Exception($error);
+    }
     throw new Exception('Could not insert bank sepa mandaat into Odoo');
   }
   
@@ -48,6 +54,12 @@ class CRM_Sepamandaat_OdooSync_Synchronisator extends CRM_Odoosync_Model_ObjectS
     $parameters = $this->getOdooParameters($data, $odoo_partner_id, $sync_entity->getEntity(), $sync_entity->getEntityId(), 'create', $sync_entity);
     if ($this->connector->write($this->getOdooResourceType(), $odoo_id, $parameters)) {
       return $odoo_id;
+    }
+    if ($this->connector->getLastResponse()->faultString()) {
+      $error = $this->connector->getLastResponse()->faultString();
+      $error = str_replace("warning -- Error:", "", $error);
+      $error = trim($error);
+      throw new Exception($error);
     }
     throw new Exception("Could not update sepa mandaat in Odoo");
   }
@@ -66,6 +78,12 @@ class CRM_Sepamandaat_OdooSync_Synchronisator extends CRM_Odoosync_Model_ObjectS
   function performDelete($odoo_id, CRM_Odoosync_Model_OdooEntity $sync_entity) {
     if ($this->connector->unlink($this->getOdooResourceType(), $odoo_id)) {
       return -1;
+    }
+    if ($this->connector->getLastResponse()->faultString()) {
+      $error = $this->connector->getLastResponse()->faultString();
+      $error = str_replace("warning -- Error:", "", $error);
+      $error = trim($error);
+      throw new Exception($error);
     }
     throw new Exception('Could not delete sepa mandaat from Odoo');
   }
