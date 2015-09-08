@@ -20,7 +20,11 @@ class CRM_Sepamandaat_OdooSync_Synchronisator extends CRM_Odoosync_Model_ObjectS
    * subclasses should implement this function to make items syncable
    */
   public function isThisItemSyncable(CRM_Odoosync_Model_OdooEntity $sync_entity) {
-    return true;
+    $data = $this->getSepaMandaat($sync_entity->getEntityId());
+    if (CRM_Odoosync_Utils_Contact::doesContactExistInCivi($data['contact_id'])) {
+      return true;
+    }
+    return false;
   }
   
   /**
