@@ -25,6 +25,10 @@ class CRM_Sepamandaat_OdooSync_Synchronisator extends CRM_Odoosync_Model_ObjectS
     if (!CRM_Odoosync_Utils_Contact::doesContactExistInCivi($data['contact_id'])) {
       return false;
     }
+    $odoo_partner_id = $sync_entity->findOdooIdByEntity('civicrm_contact', $data['contact_id']);
+    if ($odoo_partner_id <= 0) {
+      return false;
+    }
     $bank_id = $sync_entity->findOdooIdByEntity($iban_config->getIbanCustomGroupValue('table_name'), $data['iban_id']);
     if (!$bank_id) {
       return false; //no linked IBAN account
