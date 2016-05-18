@@ -61,11 +61,15 @@ class CRM_Sepamandaat_Utils_DefaultMandaatId {
           $mandaat_id = CRM_Sepamandaat_SepaMandaat::getMandatesByContactAndId($objectId, $id);
         }
         $mandaat_id_field = array();
-        CRM_Core_BAO_CustomField::formatCustomField(    
+        CRM_Core_BAO_CustomField::formatCustomField(
           $mandaat->getCustomField('mandaat_nr', 'id'),
           $mandaat_id_field,
           $mandaat_id,
-          null
+          null,
+          null,
+          null,
+          false,
+          false
         );
         
         $params['custom'][$mandaat_nr_field_id][$key] = $mandaat_id_field[$mandaat_nr_field_id][$key];
