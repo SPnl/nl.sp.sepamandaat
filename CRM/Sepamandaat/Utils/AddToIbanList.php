@@ -35,7 +35,6 @@ class CRM_Sepamandaat_Utils_AddToIbanList {
     $bic = $values[$mandaat->getCustomField('BIC','id')];
     $tnv = $values[$mandaat->getCustomField('tnv','id')];
     $contactId = $entityID;
-    
     if (!empty($iban)) {
       CRM_Ibanaccounts_Ibanaccounts::saveIBANForContact($iban, $bic, $tnv, $contactId);
     }
