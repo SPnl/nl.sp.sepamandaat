@@ -13,11 +13,9 @@ class CRM_Sepamandaat_Config_MembershipSepaMandaat {
   protected $fields;
   
   protected function __construct() {
-    $this->customgroup = civicrm_api3('CustomGroup', 'getsingle', array('name' => 'Membership_SEPA_Mandaat'));
-    $fields = civicrm_api3('CustomField', 'get', array('custom_group_id' => $this->customgroup['id']));
-    foreach($fields['values'] as $field) {
-      $this->fields[$field['name']] = $field;
-    }
+    $cfsp = CRM_Spgeneric_CustomField::singleton();
+    $this->customgroup = $cfsp->getGroupByName('Membership_SEPA_Mandaat');
+    $this->fields = $cfsp->getFields('Membership_SEPA_Mandaat');
   }
   
   /**
