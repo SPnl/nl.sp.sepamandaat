@@ -28,7 +28,7 @@ abstract class CRM_Sepamandaat_Buildform_Sepamandaat {
         if (strlen($mandaat['subject'])) {
           $label = $mandaat['subject'] . ' ('.$mandaat['mandaat_nr'].')';
         }
-        $options[$mandaat['mandaat_nr']] = $label;
+        $options[$mandaat['id']] = $label;
       }
     }
     return $options;
@@ -58,8 +58,8 @@ abstract class CRM_Sepamandaat_Buildform_Sepamandaat {
     }
 
     CRM_Core_Region::instance('page-body')->add($snippet);
-    CRM_Core_Resources::singleton()->addScriptFile('nl.sp.sepamandaat', 'js/sepamandaat.js', -1);
-    CRM_Core_Resources::singleton()->addScriptFile('nl.sp.sepamandaat', 'js/'.strtolower($this->getName()).'.js', 10);
+    CRM_Core_Resources::singleton()->addScriptFile('nl.sp.sepamandaat', 'js/sepamandaat.js', -1, 'page-header');
+    CRM_Core_Resources::singleton()->addScriptFile('nl.sp.sepamandaat', 'js/'.strtolower($this->getName()).'.js', 10, 'page-header');
   }
 
 }

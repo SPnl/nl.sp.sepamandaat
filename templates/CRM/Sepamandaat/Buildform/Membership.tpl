@@ -16,7 +16,7 @@ cj(function() {
     var sepa_mandaat_membership = new SepaMandaat_Membership();
     sepa_mandaat_membership.init('{/literal}{$snippet.contact_id}{literal}');
 
-    cj('#Membership_SEPA_Mandaat').addClass('hiddenElement');
+    cj('.custom-group-Membership_SEPA_Mandaat').addClass('hiddenElement');
 });
 {/literal}
 </script>
