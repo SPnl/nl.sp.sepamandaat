@@ -35,7 +35,7 @@ SepaMandaat.prototype.retrieveSepaMandatesForContact = function(contactId) {
         CRM.api('SepaMandaat', 'get', {'contact_id': this.currentConatctId}, {
             success: function(data) {
                 cj.each(data.values, function(key, value) {
-                    cj('#mandaat_id').append('<option value="' + value.id + '">' + value.mandaat_nr + '</option>');
+                    cj('#mandaat_id').append('<option value="' + value.mandaat_nr + '">' + value.mandaat_nr + '</option>');
                 });
             }
         });

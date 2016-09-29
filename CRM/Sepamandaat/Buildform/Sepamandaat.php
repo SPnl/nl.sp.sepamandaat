@@ -28,7 +28,7 @@ abstract class CRM_Sepamandaat_Buildform_Sepamandaat {
         if (strlen($mandaat['subject'])) {
           $label = $mandaat['subject'] . ' ('.$mandaat['mandaat_nr'].')';
         }
-        $options[$mandaat['id']] = $label;
+        $options[$mandaat['mandaat_nr']] = $label;
       }
     }
     return $options;
