@@ -86,6 +86,44 @@ function sepamandaat_civicrm_validateForm( $formName, &$fields, &$files, &$form,
     
     CRM_Sepamandaat_Utils_DefaultMandaatId::validateForm($formName, $fields, $files, $form, $errors);
   }
+  if ($formName == 'CRM_Contribute_Form_Contribution') {
+    // Do validation when payment instrument direct debit is selected and no
+    // mandate is selected.
+    $direct_debit_payment_instrument_id = civicrm_api3('OptionValue', 'getvalue' , array(
+      'option_group_id' => 'payment_instrument',
+      'name' => 'sp_automatischincasse',
+      'return' => 'value',
+    ));
+    if ($fields['payment_instrument_id'] == $direct_debit_payment_instrument_id) {
+      $contribution_config = CRM_Sepamandaat_Config_ContributionSepaMandaat::singleton();
+      $custom_field_id = $contribution_config->getCustomField('mandaat_id', 'id');
+      foreach($fields as $field => $value) {
+        if (stripos($field, 'custom_'.$custom_field_id)===0 && empty($value)) {
+          $errors[$field] = ts('Select a mandate  or a different payment method');
+          $errors['mandaat_id'] = ts('Select a mandate  or a different payment method');
+          $errors['payment_instrument_id'] = ts('Select a mandate or a different payment method');
+        }
+      }
+    }
+  }
+  if ($formName == 'CRM_Member_Form_Membership') {
+    $direct_debit_payment_instrument_id = civicrm_api3('OptionValue', 'getvalue' , array(
+      'option_group_id' => 'payment_instrument',
+      'name' => 'sp_automatischincasse',
+      'return' => 'value',
+    ));
+    if (!empty($fields['record_contribution']) && $fields['payment_instrument_id'] == $direct_debit_payment_instrument_id) {
+      $membership_config = CRM_Sepamandaat_Config_MembershipSepaMandaat::singleton();
+      $custom_field_id = $membership_config->getCustomField('mandaat_id', 'id');
+      foreach($fields as $field => $value) {
+        if (stripos($field, 'custom_'.$custom_field_id)===0 && empty($value)) {
+          $errors[$field] = ts('Select a mandate  or a different payment method');
+          $errors['mandaat_id'] = ts('Select a mandate  or a different payment method');
+          $errors['payment_instrument_id'] = ts('Select a mandate or a different payment method');
+        }
+      }
+    }
+  }
 }
 
 /** 
@@ -175,23 +213,28 @@ function _sepamandaat_get_odoo_dependencies(&$deps, $contribution_id, $offset=-1
 function sepamandaat_civicrm_odoo_alter_parameters(&$parameters, $resource, $entity, $entity_id, $action) {
   if ($entity == 'civicrm_contribution') {
     //add mandaat id to parameter list
-    $mandaat_config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
-    $contribution_config = CRM_Sepamandaat_Config_ContributionSepaMandaat::singleton();
-    $sql = "SELECT `".$contribution_config->getCustomField('mandaat_id', 'column_name')."` AS `mandaat_id` FROM `".$contribution_config->getCustomGroupInfo('table_name')."` WHERE `entity_id` = %1";
-    $dao = CRM_Core_DAO::executeQuery($sql, array(1 => array($entity_id, 'Integer')));
-    if ($dao->fetch() && $dao->mandaat_id) {
-      $odoo_id = false;
-      $mandaat_id = CRM_Sepamandaat_SepaMandaat::findMandaatIdByMandaatNr($dao->mandaat_id);
-      if ($mandaat_id) {
-        $odoo_id = CRM_Odoosync_Model_OdooEntity::findOdooIdByEntityAndEntityId($mandaat_config->getCustomGroupInfo('table_name'), $mandaat_id);
-      }
+    $mandaat_odoo_id = sepamandaat_get_odoo_id_for_contribution_id($entity_id);
+    if ($mandaat_odoo_id) {
+      $parameters['sdd_mandate_id'] = new xmlrpcval($mandaat_odoo_id, 'int');
+    }
+  }
+}
+
+function sepamandaat_get_odoo_id_for_contribution_id($contribution_id) {
+  $mandaat_config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
+  $contribution_config = CRM_Sepamandaat_Config_ContributionSepaMandaat::singleton();
+  $sql = "SELECT `".$contribution_config->getCustomField('mandaat_id', 'column_name')."` AS `mandaat_id` FROM `".$contribution_config->getCustomGroupInfo('table_name')."` WHERE `entity_id` = %1";
+  $dao = CRM_Core_DAO::executeQuery($sql, array(1 => array($contribution_id, 'Integer')));
+  if ($dao->fetch() && $dao->mandaat_id) {
+    $mandaat_id = CRM_Sepamandaat_SepaMandaat::findMandaatIdByMandaatNr($dao->mandaat_id);
+    if ($mandaat_id) {
+      $odoo_id = CRM_Odoosync_Model_OdooEntity::findOdooIdByEntityAndEntityId($mandaat_config->getCustomGroupInfo('table_name'), $mandaat_id);
       if ($odoo_id > 0) {
-        $parameters['sdd_mandate_id'] = new xmlrpcval($odoo_id, 'int');
-      } else {
-        throw new Exception('Could not lookup mandaat in Odoo '.$dao->mandaat_id.' ('.$mandaat_id.')');
+        return $odoo_id;
       }
     }
   }
+  return false;
 }
 
 /**
