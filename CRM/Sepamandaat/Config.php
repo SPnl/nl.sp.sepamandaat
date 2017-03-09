@@ -54,6 +54,7 @@ class CRM_Sepamandaat_Config {
     if (!$this->isIbanEnabled()) {
       return false;
     }
+
     return true;
   }
   
@@ -61,7 +62,7 @@ class CRM_Sepamandaat_Config {
     $error = false;
     $requiredExtensions = array($extension);
     try {
-      $extensions = civicrm_api3('Extension', 'get');  
+      $extensions = civicrm_api3('Extension', 'get', array('options' => array('limit' => false)));
       foreach($extensions['values'] as $ext) {
         if ($ext['status'] == 'installed') {
           if (in_array($ext['key'], $requiredExtensions)) {
@@ -73,7 +74,7 @@ class CRM_Sepamandaat_Config {
     } catch (Exception $e) {
       $error = true;
     }
-  
+
     if ($error || count($requiredExtensions) > 0) {
       return false;
     }
