@@ -1,0 +1,13 @@
+{
+    "name": "spnl/nl.sp.sepamandaat",
+    "description": "SEPA Mandaten voor de SP",
+    "type": "civicrm-module",
+    "license": "AGPL-3.0",
+    "authors": [
+        {
+            "name": "Jaap Jansma",
+            "email": "helpdesk@civicoop.org"
+        }
+    ],
+    "require": {}
+}
