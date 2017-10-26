@@ -7,19 +7,43 @@ class CRM_Sepamandaat_Buildform_DefaultMandaatId {
   public function __construct(&$form) {
     $this->form = $form;
   }
-  
+
   public function parse() {
     if (!self::isValidForm($this->form)) {
       return;
     }
-    
+
     $config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
-    $cid = CRM_Utils_Request::retrieve('cid', 'Positive', $this->form, TRUE);    
+    $cid = CRM_Utils_Request::retrieve('cid', 'Positive', $this->form, TRUE);
     if ($cid) {
-      $mandaat_id = CRM_Sepamandaat_SepaMandaat::getNewMandaatIdForContact($cid);    
-      $field = 'custom_'.$config->getCustomField('mandaat_nr', 'id').'_-1';
-      $defaults[$field] = $mandaat_id;
-      $this->form->setDefaults($defaults);
+      $customFieldName = 'custom_'.$config->getCustomField('mandaat_nr', 'id');
+
+      // get suffix of the new custom field (can be _-1, _-2 etc)
+      foreach ($this->form->_elementIndex as $k => $f) {
+        if (substr($k, 0, strlen($customFieldName)) == $customFieldName) {
+          // check the suffix contains _-
+          $i = strpos($k, '_-', 0);
+          if ($i === FALSE) {
+            // existing item, skip
+            break;
+          }
+          else {
+            $suffix = substr($k, $i);
+
+            // mandate ID
+            $mandaat_id = CRM_Sepamandaat_SepaMandaat::getNewMandaatIdForContact($cid);
+            $field = $customFieldName . $suffix;
+            $defaults[$field] = $mandaat_id;
+
+            // status
+            $customFieldName = 'custom_'.$config->getCustomField('status', 'id');
+            $field = $customFieldName . $suffix;
+            $defaults[$field] = 'RCUR';
+
+            $this->form->setDefaults($defaults);
+          }
+        }
+      }
     }
   }
   
