@@ -4,7 +4,7 @@ require_once 'sepamandaat.civix.php';
 
 /**
  * Implementation of hook_civicrm_post
- * 
+ *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_post
  * @param type $op
  * @param type $objectName
@@ -25,7 +25,7 @@ function sepamandaat_civicrm_pre( $op, $objectName, $objectId, &$params ) {
 }
 
 /**
- * 
+ *
  * Implementation of hook_civicrm_buildForm
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_buildForm
@@ -38,12 +38,12 @@ function sepamandaat_civicrm_buildForm($formName, &$form) {
    }
  }
  if ($formName == 'CRM_Contribute_Form_Contribution') {
-   //add template 
+   //add template
    $contribution = new CRM_Sepamandaat_Buildform_Contribution($form);
    $contribution->parse();
  }
  if ($formName == 'CRM_Member_Form_Membership') {
-   //add template 
+   //add template
    $membership = new CRM_Sepamandaat_Buildform_Membership($form);
    $membership->parse();
  }
@@ -55,8 +55,8 @@ function sepamandaat_civicrm_buildForm($formName, &$form) {
 
 /**
  * Validate the entered IBAN account number
- * 
- * 
+ *
+ *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_validateForm
  * @param type $formName
  * @param type $fields
@@ -67,12 +67,12 @@ function sepamandaat_civicrm_buildForm($formName, &$form) {
 function sepamandaat_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$errors ) {
   if ($formName == 'CRM_Contact_Form_CustomData') {
     $config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
-    
+
     $groupId = $form->getVar('_groupID');
     if ($groupId != $config->getCustomGroupInfo('id')) {
       return;
     }
-    
+
     foreach($fields as $key => $value) {
       if (strpos($key, "custom_".$config->getCustomField('IBAN', 'id'))===0) {
         $iban = new IBAN($value);
@@ -84,7 +84,7 @@ function sepamandaat_civicrm_validateForm( $formName, &$fields, &$files, &$form,
         }
       }
     }
-    
+
     CRM_Sepamandaat_Utils_DefaultMandaatId::validateForm($formName, $fields, $files, $form, $errors);
   }
   if ($formName == 'CRM_Contribute_Form_Contribution') {
@@ -127,25 +127,25 @@ function sepamandaat_civicrm_validateForm( $formName, &$fields, &$files, &$form,
   }
 }
 
-/** 
+/**
  * Implementation of hook_civicrm_custom
- * 
+ *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_custom
  */
 function sepamandaat_civicrm_custom($op,$groupID, $entityID, &$params ) {
   //add default Mandaat ID
   CRM_Sepamandaat_Utils_DefaultMandaatId::custom($op, $groupID, $entityID, $params);
-  
+
   //add iban to iban list of contact
   CRM_Sepamandaat_Utils_AddToIbanList::custom($op, $groupID, $entityID, $params);
-    
+
   //add to odoo sync queue
   CRM_Sepamandaat_Utils_AddToOdooSyncQueue::custom($op, $groupID, $entityID, $params);
 }
 
 /**
  * Check if an iban is in use by a membership
- * 
+ *
  * @param type $iban
  */
 function sepamandaat_civicrm_iban_usages($iban, $contactId = false) {
@@ -153,7 +153,7 @@ function sepamandaat_civicrm_iban_usages($iban, $contactId = false) {
   $table = $config->getCustomGroupInfo('table_name');
   $iban_field = $config->getCustomField('IBAN', 'column_name');
   $number_field = $config->getCustomField('mandaat_nr', 'column_name');
-  
+
   $sql = "SELECT `i`.`id` AS `id`, `i`.`".$number_field."` AS mandaat_nr FROM `".$table."` `i` WHERE `i`.`".$iban_field."` = %1 AND `i`.`entity_id` = %2";
   $dao = CRM_Core_DAO::executeQuery($sql, array(
     '1' => array($iban, 'String'),
@@ -168,9 +168,9 @@ function sepamandaat_civicrm_iban_usages($iban, $contactId = false) {
 
 /**
  * Implementation of hook_civicrm_odoo_object_definition
- * 
+ *
  */
-function sepamandaat_civicrm_odoo_object_definition(&$list) {  
+function sepamandaat_civicrm_odoo_object_definition(&$list) {
   $config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
   $table_name = $config->getCustomGroupInfo('table_name');
   $list[$table_name] = new CRM_Sepamandaat_OdooSync_Definition();
