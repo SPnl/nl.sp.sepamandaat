@@ -73,13 +73,14 @@ function sepamandaat_civicrm_validateForm( $formName, &$fields, &$files, &$form,
       return;
     }
     
-    $iban = new IBAN();
     foreach($fields as $key => $value) {
       if (strpos($key, "custom_".$config->getCustomField('IBAN', 'id'))===0) {
+        $iban = new IBAN($value);
         if (!$iban->Verify($value)) {
           $errors[$key] = ts("'".$value."' is not a valid IBAN");
         } else {
-          $fields[$key] = $iban->MachineFormat();
+          $data = &$form->controller->container();
+          $data['values']['CustomData'][$key] = $iban->MachineFormat();
         }
       }
     }
