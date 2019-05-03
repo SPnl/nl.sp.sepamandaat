@@ -14,7 +14,7 @@ class CRM_Sepamandaat_Buildform_DefaultMandaatId {
     }
 
     $config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
-    $cid = CRM_Utils_Request::retrieve('cid', 'Positive', $this->form, TRUE);
+    $cid = $_SESSION['contact_id_custom_sepa'];
     if ($cid) {
       $customFieldName = 'custom_'.$config->getCustomField('mandaat_nr', 'id');
 

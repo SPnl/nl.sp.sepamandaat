@@ -32,6 +32,10 @@ function sepamandaat_civicrm_pre( $op, $objectName, $objectId, &$params ) {
  */
 function sepamandaat_civicrm_buildForm($formName, &$form) {
  if ($formName == 'CRM_Contact_Form_CustomData') {
+   $cid = CRM_Utils_Request::retrieve('cid', 'Positive', $form, TRUE);
+   $_SESSION['contact_id_custom_sepa'] = $cid;
+ }
+ if ($formName == 'CRM_Custom_Form_CustomDataByType') {
    if (CRM_Sepamandaat_Buildform_DefaultMandaatId::isValidForm($form)) {
      $defaultMandaatId = new CRM_Sepamandaat_Buildform_DefaultMandaatId($form);
      $defaultMandaatId->parse();
