@@ -1,9 +1,9 @@
 <?php
 
 class CRM_Sepamandaat_Buildform_DefaultMandaatId {
-  
+
   protected $form;
-  
+
   public function __construct(&$form) {
     $this->form = $form;
   }
@@ -46,7 +46,7 @@ class CRM_Sepamandaat_Buildform_DefaultMandaatId {
       }
     }
   }
-  
+
   public static function isValidForm($form) {
     $config = CRM_Sepamandaat_Config_SepaMandaat::singleton();
     if ($config->getCustomGroupInfo('id') == $form->_groupID) {
@@ -54,6 +54,6 @@ class CRM_Sepamandaat_Buildform_DefaultMandaatId {
     }
     return false;
   }
-  
+
 }
 

@@ -1,11 +1,11 @@
 <?php
 
 class CRM_Sepamandaat_Buildform_MembershipRenewal extends CRM_Sepamandaat_Buildform_Sepamandaat {
-  
+
   protected function getName() {
     return 'membershiprenewal';
   }
-  
+
   protected function getContactIdFromValues($values) {
     $contactId = '';
     if (!empty($this->form->getVar('_contactID'))) {
@@ -20,7 +20,7 @@ class CRM_Sepamandaat_Buildform_MembershipRenewal extends CRM_Sepamandaat_Buildf
     }
     return $contactId;
   }
-  
+
   protected function getCurrentSepamandaat($contactId) {
     $config = CRM_Sepamandaat_Config_MembershipSepaMandaat::singleton();
     $table = $config->getCustomGroupInfo('table_name');
@@ -40,5 +40,5 @@ class CRM_Sepamandaat_Buildform_MembershipRenewal extends CRM_Sepamandaat_Buildf
     }
     return false;;
   }
-  
+
 }

@@ -1,16 +1,16 @@
 <?php
 
 class CRM_Sepamandaat_Buildform_Contribution extends CRM_Sepamandaat_Buildform_Sepamandaat {
-  
+
   protected function getName() {
     return 'contribution';
   }
-  
+
   protected function getCurrentSepamandaat($contactId) {
     $config = CRM_Sepamandaat_Config_ContributionSepaMandaat::singleton();
     $table = $config->getCustomGroupInfo('table_name');
     $mandaat_id_field = $config->getCustomField('mandaat_id', 'column_name');
-    
+
     $contribution_id = $this->form->getVar('_id');
     if ($contribution_id) {
       //set default value
@@ -25,7 +25,7 @@ class CRM_Sepamandaat_Buildform_Contribution extends CRM_Sepamandaat_Buildform_S
     }
     return false;;
   }
-  
+
   protected function getContactIdFromValues($values) {
     $contactId = '';
     if ($this->form && !empty($this->form->getVar('_contactID'))) {
@@ -33,6 +33,6 @@ class CRM_Sepamandaat_Buildform_Contribution extends CRM_Sepamandaat_Buildform_S
     }
     return $contactId;
   }
-  
+
 }
 

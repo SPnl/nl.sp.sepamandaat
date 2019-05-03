@@ -3,11 +3,11 @@
 abstract class CRM_Sepamandaat_Buildform_Sepamandaat {
 
   //abstract public function postProcess();
-  
+
   abstract protected function getContactIdFromValues($values);
 
   abstract protected function getName();
-  
+
   abstract protected function getCurrentSepamandaat($contactId);
 
   protected $form;
@@ -33,7 +33,7 @@ abstract class CRM_Sepamandaat_Buildform_Sepamandaat {
     }
     return $options;
   }
-  
+
   /**
    * Add the UI code to the form
    */
@@ -42,8 +42,6 @@ abstract class CRM_Sepamandaat_Buildform_Sepamandaat {
     $contactId = $this->getContactIdFromValues($values);
 
     $options = $this->generateOptions($contactId);
-    
-    
 
     $snippet['template'] = 'CRM/Sepamandaat/Buildform/'.ucfirst($this->getName()).'.tpl';
     $snippet['contact_id'] = $contactId;

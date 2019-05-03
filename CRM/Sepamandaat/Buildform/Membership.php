@@ -1,11 +1,11 @@
 <?php
 
 class CRM_Sepamandaat_Buildform_Membership extends CRM_Sepamandaat_Buildform_Sepamandaat {
-  
+
   protected function getName() {
     return 'membership';
   }
-  
+
   protected function getContactIdFromValues($values) {
     $contactId = '';
     if (!empty($this->form->getVar('_contactID'))) {
@@ -20,7 +20,7 @@ class CRM_Sepamandaat_Buildform_Membership extends CRM_Sepamandaat_Buildform_Sep
     }
     return $contactId;
   }
-  
+
   protected function getCurrentSepamandaat($contactId) {
     $config = CRM_Sepamandaat_Config_MembershipSepaMandaat::singleton();
     $table = $config->getCustomGroupInfo('table_name');
@@ -41,6 +41,6 @@ class CRM_Sepamandaat_Buildform_Membership extends CRM_Sepamandaat_Buildform_Sep
     }
     return false;;
   }
-  
+
 }
 
