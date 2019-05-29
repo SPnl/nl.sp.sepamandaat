@@ -31,7 +31,12 @@ class CRM_Sepamandaat_Utils_AddToOdooSyncQueue {
       $contactParams = array();
       $contactParams['id'] = $entityID;
       foreach($params as $param) {
-        $contactParams['custom_'.$param['custom_field_id']] = $param['value'];
+        if ($param['column_name'] === 'plaats' && $param['value'] != null && strpos($param['value'], "'") !== false) {
+          $contactParams['custom_'.$param['custom_field_id']] = ['LIKE' => '%' . $param['value']];
+        }
+        else {
+          $contactParams['custom_'.$param['custom_field_id']] = $param['value'];
+        }
         $contactParams['return.custom_'.$param['custom_field_id']] = 1;
       }
       
